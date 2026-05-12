@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA para Educadores · Plataforma del Curso</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0A0F1E;--ink2:#2D3452;--ink3:#6B7599;
+  --bg:#F5F7FF;--bg2:#EBEEFF;--white:#FFFFFF;
+  --azul:#2952E3;--azul-d:#1A35A8;--azul-l:#E8EEFF;
+  --verde:#0B9065;--verde-l:#E3F5EE;
+  --ambar:#C4680A;--ambar-l:#FEF3E2;
+  --coral:#E03264;--coral-l:#FDEEF3;
+  --morado:#6D28D9;--morado-l:#F0EBFF;
+  --borde:rgba(41,82,227,0.12);
+  --shadow:0 2px 16px rgba(41,82,227,0.10);
+  --shadow-lg:0 8px 40px rgba(41,82,227,0.18);
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+
+/* =========== LOGIN =========== */
+#login-screen{
+  position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(135deg,#0A0F1E 0%,#1A35A8 40%,#2952E3 70%,#4F6EFF 100%);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.6s,transform 0.6s;
+}
+#login-screen.out{opacity:0;transform:scale(1.05);pointer-events:none;}
+.login-bg{
+  position:absolute;inset:0;overflow:hidden;
+}
+.login-bg::before{
+  content:'';position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background:rgba(255,255,255,0.04);
+  top:-100px;right:-150px;
+}
+.login-bg::after{
+  content:'';position:absolute;
+  width:400px;height:400px;border-radius:50%;
+  background:rgba(255,255,255,0.03);
+  bottom:-100px;left:-80px;
+}
+.login-dots{
+  position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,0.12) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+.login-box{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:28px;
+  padding:2.5rem 2.8rem;
+  width:420px;max-width:90vw;
+  backdrop-filter:blur(20px);
+}
+.login-logo{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:1.8rem;
+}
+.login-logo-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.login-logo-text{
+  font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:#fff;line-height:1.2;
+}
+.login-logo-sub{font-size:11px;color:rgba(255,255,255,0.55);font-weight:400;}
+.login-box h2{
+  font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:#fff;
+  margin-bottom:6px;line-height:1.2;
+}
+.login-box p{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:1.8rem;line-height:1.5;}
+.field-group{margin-bottom:1rem;}
+.field-group label{display:block;font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:6px;letter-spacing:0.03em;}
+.field-group input{
+  width:100%;padding:10px 14px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;font-size:14px;color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:border 0.2s,background 0.2s;outline:none;
+}
+.field-group input::placeholder{color:rgba(255,255,255,0.35);}
+.field-group input:focus{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.5);}
+.login-roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem;}
+.role-btn{
+  padding:8px 12px;border-radius:10px;
+  border:1px solid rgba(255,255,255,0.2);
+  background:transparent;color:rgba(255,255,255,0.65);
+  font-size:12px;font-weight:600;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all 0.2s;text-align:center;
+}
+.role-btn.active,.role-btn:hover{background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.4);}
+.login-btn{
+  width:100%;padding:12px;border-radius:12px;
+  background:#fff;color:var(--azul);
+  font-size:15px;font-weight:700;border:none;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.25);}
+.login-btn:active{transform:scale(0.98);}
+.login-hint{text-align:center;margin-top:1rem;font-size:11.5px;color:rgba(255,255,255,0.45);}
+.login-hint span{color:rgba(255,255,255,0.75);}
+
+/* =========== MAIN APP =========== */
+#app{display:none;min-height:100vh;}
+#app.visible{display:flex;}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;min-height:100vh;flex-shrink:0;
+  background:var(--ink);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-logo{
+  padding:1.5rem 1.25rem 1rem;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.sidebar-logo-row{display:flex;align-items:center;gap:10px;}
+.s-logo-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:17px;
+}
+.s-logo-title{
+  font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:#fff;line-height:1.2;
+}
+.s-logo-sub{font-size:10px;color:rgba(255,255,255,0.4);}
+.sidebar-user{
+  padding:0.9rem 1.25rem;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;gap:10px;
+}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#4F6EFF,#2952E3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.user-name{font-size:13px;font-weight:600;color:#fff;}
+.user-role{font-size:11px;color:rgba(255,255,255,0.4);}
+.sidebar-section-label{
+  padding:1rem 1.25rem 0.4rem;
+  font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:0.55rem 1.25rem;cursor:pointer;
+  border-radius:0;transition:all 0.2s;
+  position:relative;
+  border-left:3px solid transparent;
+}
+.nav-item:hover{background:rgba(255,255,255,0.05);}
+.nav-item.active{
+  background:rgba(41,82,227,0.25);
+  border-left-color:var(--azul);
+}
+.nav-icon{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+}
+.nav-item.active .nav-icon{background:rgba(41,82,227,0.4);}
+.nav-label{font-size:13px;font-weight:500;color:rgba(255,255,255,0.6);}
+.nav-item.active .nav-label{color:#fff;font-weight:600;}
+.nav-badge{
+  margin-left:auto;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:100px;
+  background:var(--azul);color:#fff;
+}
+.sidebar-progress{
+  margin:auto 0 0;padding:1.25rem;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.sp-label{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;}
+.sp-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--azul),#4F6EFF);border-radius:4px;transition:width 0.8s;}
+.sp-pct{font-size:12px;font-weight:700;color:#fff;}
+.level-chip{
+  margin-top:8px;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(79,110,255,0.2);border:1px solid rgba(79,110,255,0.35);
+  border-radius:100px;padding:4px 10px;
+  font-size:11px;font-weight:700;color:#8BA8FF;
+}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;min-height:100vh;}
+.topbar{
+  padding:1rem 2rem;display:flex;align-items:center;
+  background:var(--white);border-bottom:1px solid var(--borde);
+  gap:12px;position:sticky;top:0;z-index:100;
+}
+.topbar-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);flex:1;}
+.topbar-week{
+  font-size:12px;font-weight:600;color:var(--azul);
+  background:var(--azul-l);padding:4px 12px;border-radius:100px;
+}
+.notif-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--bg);border:1px solid var(--borde);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;transition:all 0.2s;
+}
+.notif-btn:hover{background:var(--bg2);}
+
+/* PAGES */
+.page{display:none;padding:1.75rem 2rem;}
+.page.active{display:block;}
+
+/* =========== INICIO =========== */
+.bienvenida{
+  background:linear-gradient(135deg,var(--ink) 0%,var(--azul-d) 50%,var(--azul) 100%);
+  border-radius:20px;padding:2rem 2.5rem;
+  margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.bienvenida::before{
+  content:'';position:absolute;right:-50px;top:-50px;
+  width:250px;height:250px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.bienvenida h2{
+  font-family:'Fraunces',serif;font-size:24px;font-weight:900;color:#fff;
+  margin-bottom:6px;position:relative;
+}
+.bienvenida p{font-size:13px;color:rgba(255,255,255,0.65);max-width:500px;line-height:1.6;position:relative;}
+.bienvenida-pills{display:flex;gap:8px;margin-top:1.25rem;flex-wrap:wrap;position:relative;}
+.bpill{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+  border-radius:100px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,0.85);
+}
+
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.stat-card{
+  background:var(--white);border:1px solid var(--borde);
+  border-radius:16px;padding:1.1rem;cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+.stat-card.az::before{background:linear-gradient(90deg,var(--azul),#4F6EFF);}
+.stat-card.vd::before{background:linear-gradient(90deg,var(--verde),#12C27A);}
+.stat-card.am::before{background:linear-gradient(90deg,var(--ambar),#F28C38);}
+.stat-card.mo::before{background:linear-gradient(90deg,var(--morado),#A78BFA);}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.sc-icon{font-size:22px;margin-bottom:8px;}
+.sc-num{font-family:'Fraunces',serif;font-size:28px;font-weight:900;line-height:1;margin-bottom:4px;}
+.stat-card.az .sc-num{color:var(--azul);}
+.stat-card.vd .sc-num{color:var(--verde);}
+.stat-card.am .sc-num{color:var(--ambar);}
+.stat-card.mo .sc-num{color:var(--morado);}
+.sc-label{font-size:12px;color:var(--ink3);}
+
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:1.25rem;margin-bottom:1.5rem;}
+.widget{background:var(--white);border:1px solid var(--borde);border-radius:18px;padding:1.25rem 1.5rem;}
+.widget-title{
+  font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--ink);
+  margin-bottom:1rem;display:flex;align-items:center;gap:8px;
+}
+.wt-icon{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+
+/* Unidad progress */
+.unidad-row{
+  display:flex;align-items:center;gap:12px;
+  padding:0.65rem 0;border-bottom:1px solid var(--borde);cursor:pointer;
+  transition:all 0.2s;border-radius:8px;padding-left:4px;
+}
+.unidad-row:last-child{border-bottom:none;}
+.unidad-row:hover{background:var(--bg);transform:translateX(3px);}
+.ur-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ur-info{flex:1;}
+.ur-name{font-size:13px;font-weight:600;color:var(--ink);}
+.ur-sub{font-size:11px;color:var(--ink3);}
+.ur-bar-wrap{width:80px;}
+.ur-bar{height:5px;background:var(--bg2);border-radius:5px;overflow:hidden;}
+.ur-fill{height:100%;border-radius:5px;transition:width 1s;}
+.ur-pct{font-size:11px;font-weight:700;margin-top:2px;text-align:right;}
+
+/* Actividad reciente */
+.act-item{
+  display:flex;gap:10px;padding:0.6rem 0;
+  border-bottom:1px solid var(--borde);
+}
+.act-item:last-child{border-bottom:none;}
+.act-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;
+}
+.act-text{font-size:12.5px;color:var(--ink2);line-height:1.4;}
+.act-time{font-size:11px;color:var(--ink3);}
+
+/* =========== UNIDADES =========== */
+.unidades-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.unidad-card{
+  background:var(--white);border:1px solid var(--borde);
+  border-radius:20px;overflow:hidden;
+  transition:transform 0.25s,box-shadow 0.25s;cursor:pointer;
+}
+.unidad-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+.uc-header{padding:1.5rem 1.5rem 1rem;position:relative;}
+.uc-num{
+  font-family:'Fraunces',serif;font-size:48px;font-weight:900;
+  line-height:1;margin-bottom:0.5rem;opacity:0.12;position:absolute;top:12px;right:16px;
+}
+.uc-badge{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:100px;margin-bottom:8px;
+}
+.uc-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:6px;}
+.uc-desc{font-size:12px;color:var(--ink3);line-height:1.5;}
+.uc-footer{padding:1rem 1.5rem;border-top:1px solid var(--borde);}
+.uc-progress{margin-bottom:10px;}
+.uc-prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:5px;}
+.uc-prog-bar{height:5px;background:var(--bg2);border-radius:5px;overflow:hidden;}
+.uc-prog-fill{height:100%;border-radius:5px;transition:width 1s;}
+.uc-tools{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.uc-tool{font-size:11px;padding:3px 8px;border-radius:100px;border:1px solid var(--borde);color:var(--ink2);background:var(--bg);}
+.uc-btn{
+  width:100%;padding:8px;border-radius:10px;
+  font-size:13px;font-weight:700;border:none;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;
+}
+.uc-btn:hover{filter:brightness(0.92);}
+
+/* =========== ACTIVIDAD INDIVIDUAL =========== */
+#activity-view{display:none;}
+.av-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:600;color:var(--azul);cursor:pointer;
+  margin-bottom:1.25rem;transition:gap 0.2s;
+  background:none;border:none;padding:0;
+}
+.av-back:hover{gap:10px;}
+.av-header{
+  background:var(--white);border:1px solid var(--borde);
+  border-radius:18px;padding:1.5rem;margin-bottom:1.25rem;
+}
+.av-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--ink);margin-bottom:6px;}
+.av-header p{font-size:13px;color:var(--ink3);line-height:1.6;}
+.av-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+
+/* Video placeholder */
+.video-box{
+  background:var(--ink);border-radius:14px;
+  aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;
+}
+.video-box::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(41,82,227,0.6),rgba(10,15,30,0.8));
+}
+.play-btn{
+  position:relative;z-index:1;
+  width:60px;height:60px;border-radius:50%;
+  background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  transition:all 0.2s;
+}
+.video-box:hover .play-btn{background:rgba(255,255,255,0.35);transform:scale(1.1);}
+.video-label{position:absolute;bottom:12px;left:14px;font-size:12px;color:rgba(255,255,255,0.7);z-index:1;}
+
+/* Lectura */
+.lectura-box{
+  background:var(--bg);border:1px solid var(--borde);
+  border-radius:14px;padding:1.25rem;
+}
+.lectura-box h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.lectura-box p{font-size:12.5px;color:var(--ink2);line-height:1.7;}
+
+/* Reto/Quiz */
+.quiz-box{
+  background:var(--white);border:1px solid var(--borde);
+  border-radius:18px;padding:1.5rem;
+}
+.quiz-box h3{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:0.5rem;}
+.quiz-box p{font-size:13px;color:var(--ink3);margin-bottom:1.25rem;line-height:1.5;}
+.quiz-pregunta{
+  background:var(--bg);border-radius:12px;padding:1rem;margin-bottom:1rem;
+}
+.quiz-pregunta p{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+.quiz-opciones{display:flex;flex-direction:column;gap:7px;}
+.quiz-op{
+  padding:9px 14px;border-radius:9px;
+  border:1.5px solid var(--borde);background:var(--white);
+  font-size:13px;color:var(--ink2);cursor:pointer;
+  transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;text-align:left;
+}
+.quiz-op:hover{border-color:var(--azul);background:var(--azul-l);color:var(--azul);}
+.quiz-op.correct{border-color:var(--verde);background:var(--verde-l);color:var(--verde);font-weight:600;}
+.quiz-op.wrong{border-color:var(--coral);background:var(--coral-l);color:var(--coral);}
+.quiz-result{display:none;padding:1rem;border-radius:10px;font-size:13px;font-weight:600;text-align:center;}
+.quiz-result.show{display:block;}
+.quiz-submit{
+  width:100%;padding:11px;border-radius:12px;
+  background:var(--azul);color:#fff;font-size:14px;font-weight:700;
+  border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all 0.2s;margin-top:0.75rem;
+}
+.quiz-submit:hover{background:var(--azul-d);transform:translateY(-1px);}
+.quiz-submit:disabled{opacity:0.5;cursor:default;transform:none;}
+
+/* Foro */
+.foro-box{
+  background:var(--white);border:1px solid var(--borde);
+  border-radius:18px;padding:1.5rem;
+}
+.foro-box h3{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:0.4rem;}
+.foro-box > p{font-size:12.5px;color:var(--ink3);margin-bottom:1.25rem;line-height:1.5;}
+.foro-mensaje{
+  display:flex;gap:10px;margin-bottom:1rem;
+  animation:slideIn 0.3s ease both;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.foro-avatar{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;
+}
+.foro-burbuja{
+  background:var(--bg);border:1px solid var(--borde);
+  border-radius:0 12px 12px 12px;padding:10px 12px;flex:1;
+}
+.foro-burbuja.propio{
+  background:var(--azul-l);border-color:rgba(41,82,227,0.2);
+  border-radius:12px 0 12px 12px;
+}
+.foro-autor{font-size:11.5px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.foro-texto{font-size:12.5px;color:var(--ink2);line-height:1.5;}
+.foro-tiempo{font-size:10.5px;color:var(--ink3);margin-top:4px;}
+.foro-input-area{margin-top:1rem;border-top:1px solid var(--borde);padding-top:1rem;}
+.foro-textarea{
+  width:100%;padding:10px 14px;border-radius:10px;
+  border:1.5px solid var(--borde);background:var(--bg);
+  font-size:13px;color:var(--ink);resize:vertical;min-height:72px;
+  font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border 0.2s;
+}
+.foro-textarea:focus{border-color:var(--azul);}
+.foro-enviar{
+  margin-top:8px;padding:9px 20px;border-radius:10px;
+  background:var(--azul);color:#fff;font-size:13px;font-weight:700;
+  border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;
+}
+.foro-enviar:hover{background:var(--azul-d);}
+.foro-chars{font-size:11px;color:var(--ink3);margin-top:4px;}
+.foro-req{font-size:11px;color:var(--coral);display:none;}
+
+/* Entrega */
+.entrega-box{
+  background:var(--white);border:2px dashed var(--borde);
+  border-radius:16px;padding:2rem;text-align:center;cursor:pointer;
+  transition:all 0.2s;
+}
+.entrega-box:hover{border-color:var(--azul);background:var(--azul-l);}
+.entrega-box.done{border-style:solid;border-color:var(--verde);background:var(--verde-l);}
+.entrega-icon{font-size:32px;margin-bottom:8px;}
+.entrega-box h4{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.entrega-box p{font-size:12px;color:var(--ink3);}
+
+/* =========== FORO GENERAL =========== */
+.foro-full{background:var(--white);border:1px solid var(--borde);border-radius:18px;padding:1.5rem;}
+.foro-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.ftab{
+  padding:7px 16px;border-radius:100px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--borde);background:var(--bg);color:var(--ink3);cursor:pointer;
+  transition:all 0.2s;
+}
+.ftab.active{background:var(--azul);color:#fff;border-color:var(--azul);}
+
+/* =========== PROGRESO =========== */
+.prog-section{margin-bottom:2rem;}
+.prog-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:1rem;}
+.prog-card{background:var(--white);border:1px solid var(--borde);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:0.75rem;}
+.pc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pc-name{font-size:14px;font-weight:600;color:var(--ink);}
+.pc-pct{font-size:14px;font-weight:700;}
+.pc-bar{height:6px;background:var(--bg2);border-radius:6px;overflow:hidden;}
+.pc-fill{height:100%;border-radius:6px;transition:width 1.2s;}
+.pc-details{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;}
+.pc-det{font-size:11.5px;color:var(--ink3);}
+.pc-det span{font-weight:600;color:var(--ink2);}
+
+/* Insignias */
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.badge-item{
+  background:var(--white);border:1px solid var(--borde);
+  border-radius:14px;padding:1rem;text-align:center;
+  transition:transform 0.2s;cursor:pointer;
+}
+.badge-item:hover{transform:translateY(-3px);}
+.badge-item.locked{opacity:0.4;filter:grayscale(1);}
+.badge-emoji{font-size:28px;margin-bottom:6px;}
+.badge-name{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.badge-desc{font-size:11px;color:var(--ink3);}
+
+/* =========== EVALUACION =========== */
+.eval-card{background:var(--white);border:1px solid var(--borde);border-radius:18px;padding:1.5rem;margin-bottom:1.25rem;}
+.ev-criterio{display:flex;align-items:center;gap:12px;padding:0.8rem 0;border-bottom:1px solid var(--borde);}
+.ev-criterio:last-child{border-bottom:none;}
+.ev-nombre{flex:1;font-size:13.5px;font-weight:600;color:var(--ink);}
+.ev-stars{display:flex;gap:4px;}
+.ev-star{
+  font-size:18px;cursor:pointer;color:var(--bg2);
+  transition:color 0.15s,transform 0.15s;
+}
+.ev-star.on,.ev-star:hover{color:#F59E0B;transform:scale(1.15);}
+.ev-pts{font-size:13px;font-weight:700;color:var(--azul);min-width:40px;text-align:right;}
+
+/* =========== TOASTS =========== */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;
+  background:var(--ink);color:#fff;
+  border-radius:12px;padding:12px 18px;font-size:13px;font-weight:500;
+  z-index:9999;display:flex;align-items:center;gap:8px;
+  transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-width:320px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* =========== ANIMACIONES =========== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.page.active > *{animation:fadeUp 0.4s ease both;}
+.page.active > *:nth-child(2){animation-delay:0.06s;}
+.page.active > *:nth-child(3){animation-delay:0.12s;}
+.page.active > *:nth-child(4){animation-delay:0.18s;}
+.page.active > *:nth-child(5){animation-delay:0.24s;}
+
+/* =========== SCROLLBAR =========== */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(41,82,227,0.2);border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(41,82,227,0.4);}
+
+/* =========== RESPONSIVE =========== */
+@media(max-width:900px){
+  .sidebar{width:220px;}
+  .cards4{grid-template-columns:repeat(2,1fr);}
+  .grid2{grid-template-columns:1fr;}
+  .unidades-grid{grid-template-columns:1fr 1fr;}
+  .av-grid{grid-template-columns:1fr;}
+}
+@media(max-width:650px){
+  .sidebar{position:fixed;left:-260px;z-index:200;transition:left 0.3s;}
+  .sidebar.open{left:0;}
+  .main{margin-left:0;}
+  .unidades-grid{grid-template-columns:1fr;}
+  .badges-grid{grid-template-columns:repeat(2,1fr);}
+  .page{padding:1rem;}
+}
+
+.section-label{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.6rem;}
+.divider{height:1px;background:var(--borde);margin:1.25rem 0;}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-bg">
+    <div class="login-dots"></div>
+  </div>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">🎮</div>
+      <div>
+        <div class="login-logo-text">IA para Educadores</div>
+        <div class="login-logo-sub">Maestría · U. de Cartagena</div>
+      </div>
+    </div>
+    <h2>Bienvenido/a al curso</h2>
+    <p>Ingresa tus datos para comenzar tu experiencia de aprendizaje lúdico con Inteligencia Artificial.</p>
+    <div class="field-group">
+      <label>NOMBRE COMPLETO</label>
+      <input type="text" id="login-nombre" placeholder="Tu nombre completo">
+    </div>
+    <div class="field-group">
+      <label>CORREO INSTITUCIONAL</label>
+      <input type="email" id="login-email" placeholder="correo@institucion.edu.co">
+    </div>
+    <div class="field-group" style="margin-bottom:0.5rem">
+      <label>ROL</label>
+      <div class="login-roles">
+        <button class="role-btn active" onclick="selectRole(this,'Docente Participante')">👩‍🏫 Docente</button>
+        <button class="role-btn" onclick="selectRole(this,'Tutor del Curso')">🧑‍💼 Tutor</button>
+      </div>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Ingresar al Curso →</button>
+    <p class="login-hint">Curso: <span>Aprendiendo con Juego: IA para Educadores</span></p>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-row">
+        <div class="s-logo-icon">🎮</div>
+        <div>
+          <div class="s-logo-title">IA para<br>Educadores</div>
+          <div class="s-logo-sub">Maestría · U. Cartagena</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">MA</div>
+      <div>
+        <div class="user-name" id="sidebar-nombre">Mi Nombre</div>
+        <div class="user-role" id="sidebar-rol">Docente Participante</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Principal</div>
+    <div class="nav-item active" onclick="goPage('inicio')">
+      <div class="nav-icon">🏠</div>
+      <span class="nav-label">Inicio</span>
+    </div>
+    <div class="nav-item" onclick="goPage('unidades')">
+      <div class="nav-icon">📚</div>
+      <span class="nav-label">Unidades</span>
+    </div>
+    <div class="sidebar-section-label">Mi Aprendizaje</div>
+    <div class="nav-item" onclick="goPage('foro')">
+      <div class="nav-icon">💬</div>
+      <span class="nav-label">Foros</span>
+      <span class="nav-badge" id="foro-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="goPage('progreso')">
+      <div class="nav-icon">📊</div>
+      <span class="nav-label">Mi Progreso</span>
+    </div>
+    <div class="nav-item" onclick="goPage('evaluacion')">
+      <div class="nav-icon">⭐</div>
+      <span class="nav-label">Evaluación</span>
+    </div>
+    <div class="sidebar-section-label">Recursos</div>
+    <div class="nav-item" onclick="goPage('materiales')">
+      <div class="nav-icon">📁</div>
+      <span class="nav-label">Materiales</span>
+    </div>
+    <div class="nav-item" onclick="doLogout()" style="margin-top:auto">
+      <div class="nav-icon">🚪</div>
+      <span class="nav-label" style="color:rgba(255,100,100,0.7)">Cerrar sesión</span>
+    </div>
+    <div class="sidebar-progress">
+      <div class="sp-label">Progreso general del curso</div>
+      <div class="sp-bar"><div class="sp-fill" id="sidebar-prog" style="width:0%"></div></div>
+      <div class="sp-pct" id="sidebar-prog-txt">0% completado</div>
+      <div class="level-chip" id="sidebar-level">⚡ Explorador</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Inicio del Curso</div>
+      <div class="topbar-week" id="topbar-week">📅 Semana 1 de 6</div>
+      <div class="notif-btn" title="Notificaciones">🔔</div>
+    </div>
+
+    <!-- ===== PÁGINA INICIO ===== -->
+    <div class="page active" id="page-inicio">
+      <div class="bienvenida">
+        <h2>¡Hola, <span id="hero-nombre">docente</span>! 👋</h2>
+        <p>Bienvenido/a a tu curso de Inteligencia Artificial con enfoque lúdico. Aquí aprenderás a transformar tus clases con herramientas de IA en un ambiente gamificado y colaborativo.</p>
+        <div class="bienvenida-pills">
+          <span class="bpill">🎮 Gamificación activa</span>
+          <span class="bpill">⏱ 6 semanas</span>
+          <span class="bpill">📱 Acceso desde celular</span>
+          <span class="bpill">🌿 Contexto rural · Neiva, Huila</span>
+        </div>
+      </div>
+
+      <div class="cards4">
+        <div class="stat-card az" onclick="goPage('unidades')">
+          <div class="sc-icon">📚</div>
+          <div class="sc-num">3</div>
+          <div class="sc-label">Unidades del curso</div>
+        </div>
+        <div class="stat-card vd" onclick="goPage('progreso')">
+          <div class="sc-icon">✅</div>
+          <div class="sc-num" id="stat-completadas">0</div>
+          <div class="sc-label">Actividades completadas</div>
+        </div>
+        <div class="stat-card am" onclick="goPage('progreso')">
+          <div class="sc-icon">⭐</div>
+          <div class="sc-num" id="stat-puntos">0</div>
+          <div class="sc-label">Puntos acumulados</div>
+        </div>
+        <div class="stat-card mo" onclick="goPage('foro')">
+          <div class="sc-icon">💬</div>
+          <div class="sc-num" id="stat-mensajes">0</div>
+          <div class="sc-label">Participaciones en foros</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="widget">
+          <div class="widget-title">
+            <div class="wt-icon" style="background:var(--azul-l);color:var(--azul)">📈</div>
+            Progreso por Unidad
+          </div>
+          <div class="unidad-row" onclick="openUnidad(0)">
+            <div class="ur-dot" style="background:var(--azul)"></div>
+            <div class="ur-info">
+              <div class="ur-name">Unidad 1 · Conociendo la IA</div>
+              <div class="ur-sub">Sem. 1–2 · 4 actividades</div>
+            </div>
+            <div class="ur-bar-wrap">
+              <div class="ur-bar"><div class="ur-fill" id="bar-u1" style="width:0%;background:var(--azul)"></div></div>
+              <div class="ur-pct" id="pct-u1" style="color:var(--azul)">0%</div>
+            </div>
+          </div>
+          <div class="unidad-row" onclick="openUnidad(1)">
+            <div class="ur-dot" style="background:var(--verde)"></div>
+            <div class="ur-info">
+              <div class="ur-name">Unidad 2 · IA en mis clases</div>
+              <div class="ur-sub">Sem. 3–4 · 4 actividades</div>
+            </div>
+            <div class="ur-bar-wrap">
+              <div class="ur-bar"><div class="ur-fill" id="bar-u2" style="width:0%;background:var(--verde)"></div></div>
+              <div class="ur-pct" id="pct-u2" style="color:var(--verde)">0%</div>
+            </div>
+          </div>
+          <div class="unidad-row" onclick="openUnidad(2)">
+            <div class="ur-dot" style="background:var(--ambar)"></div>
+            <div class="ur-info">
+              <div class="ur-name">Unidad 3 · Diseño Lúdico con IA</div>
+              <div class="ur-sub">Sem. 5–6 · 4 actividades</div>
+            </div>
+            <div class="ur-bar-wrap">
+              <div class="ur-bar"><div class="ur-fill" id="bar-u3" style="width:0%;background:var(--ambar)"></div></div>
+              <div class="ur-pct" id="pct-u3" style="color:var(--ambar)">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">
+            <div class="wt-icon" style="background:var(--verde-l);color:var(--verde)">⚡</div>
+            Actividad Reciente
+          </div>
+          <div id="actividad-feed">
+            <div class="act-item">
+              <div class="act-dot" style="background:var(--azul)"></div>
+              <div>
+                <div class="act-text">Curso iniciado — ¡Bienvenido/a!</div>
+                <div class="act-time">Ahora mismo</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-dot" style="background:var(--verde)"></div>
+              <div>
+                <div class="act-text">Tutora Juliana publicó: "¡Bienvenidos a la Unidad 1!"</div>
+                <div class="act-time">Hace 2 horas</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-dot" style="background:var(--ambar)"></div>
+              <div>
+                <div class="act-text">Nuevo recurso disponible: Video introductorio IA</div>
+                <div class="act-time">Hace 1 día</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PÁGINA UNIDADES ===== -->
+    <div class="page" id="page-unidades">
+      <p class="section-label" style="margin-bottom:1rem">Selecciona una unidad para comenzar</p>
+      <div class="unidades-grid">
+        <!-- Unidad 1 -->
+        <div class="unidad-card" onclick="openUnidad(0)">
+          <div class="uc-header" style="background:linear-gradient(135deg,#E8EEFF,#F0F3FF)">
+            <div class="uc-num" style="color:var(--azul)">01</div>
+            <div class="uc-badge" style="background:var(--azul-l);color:var(--azul)">🟦 Semanas 1–2</div>
+            <div class="uc-title">Conociendo a la IA: De extraña a aliada</div>
+            <div class="uc-desc">Qué es la IA, mitos y verdades, ética del uso pedagógico. Tu primer reto gamificado.</div>
+          </div>
+          <div class="uc-footer">
+            <div class="uc-progress">
+              <div class="uc-prog-label"><span>Progreso</span><span id="uc-pct-0">0%</span></div>
+              <div class="uc-prog-bar"><div class="uc-prog-fill" id="uc-fill-0" style="width:0%;background:var(--azul)"></div></div>
+            </div>
+            <div class="uc-tools">
+              <span class="uc-tool">ChatGPT</span><span class="uc-tool">Copilot</span><span class="uc-tool">Nearpod</span>
+            </div>
+            <button class="uc-btn" style="background:var(--azul);color:#fff">Iniciar Unidad →</button>
+          </div>
+        </div>
+        <!-- Unidad 2 -->
+        <div class="unidad-card" onclick="openUnidad(1)">
+          <div class="uc-header" style="background:linear-gradient(135deg,#E3F5EE,#F0FAF5)">
+            <div class="uc-num" style="color:var(--verde)">02</div>
+            <div class="uc-badge" style="background:var(--verde-l);color:var(--verde)">🟩 Semanas 3–4</div>
+            <div class="uc-title">La IA en mis clases: Herramientas para crear</div>
+            <div class="uc-desc">Creación de contenido con IA, evaluación adaptativa y galería colaborativa de materiales.</div>
+          </div>
+          <div class="uc-footer">
+            <div class="uc-progress">
+              <div class="uc-prog-label"><span>Progreso</span><span id="uc-pct-1">0%</span></div>
+              <div class="uc-prog-bar"><div class="uc-prog-fill" id="uc-fill-1" style="width:0%;background:var(--verde)"></div></div>
+            </div>
+            <div class="uc-tools">
+              <span class="uc-tool">Canva IA</span><span class="uc-tool">Quizlet</span><span class="uc-tool">Magic School</span>
+            </div>
+            <button class="uc-btn" style="background:var(--verde);color:#fff">Iniciar Unidad →</button>
+          </div>
+        </div>
+        <!-- Unidad 3 -->
+        <div class="unidad-card" onclick="openUnidad(2)">
+          <div class="uc-header" style="background:linear-gradient(135deg,#FEF3E2,#FFF7EE)">
+            <div class="uc-num" style="color:var(--ambar)">03</div>
+            <div class="uc-badge" style="background:var(--ambar-l);color:var(--ambar)">🟧 Semanas 5–6</div>
+            <div class="uc-title">Diseño lúdico con IA: Juegos que enseñan</div>
+            <div class="uc-desc">Crea juegos educativos con IA y presenta tu producto final gamificado en video.</div>
+          </div>
+          <div class="uc-footer">
+            <div class="uc-progress">
+              <div class="uc-prog-label"><span>Progreso</span><span id="uc-pct-2">0%</span></div>
+              <div class="uc-prog-bar"><div class="uc-prog-fill" id="uc-fill-2" style="width:0%;background:var(--ambar)"></div></div>
+            </div>
+            <div class="uc-tools">
+              <span class="uc-tool">Educaplay</span><span class="uc-tool">Genially</span><span class="uc-tool">Kahoot+IA</span>
+            </div>
+            <button class="uc-btn" style="background:var(--ambar);color:#fff">Iniciar Unidad →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista actividad individual -->
+      <div id="activity-view" style="margin-top:1.5rem;">
+        <button class="av-back" onclick="closeActivity()">← Volver a Unidades</button>
+        <div class="av-header" id="av-header"></div>
+        <div class="av-grid" id="av-content"></div>
+      </div>
+    </div>
+
+    <!-- ===== FORO ===== -->
+    <div class="page" id="page-foro">
+      <div class="foro-full">
+        <div class="foro-tabs">
+          <button class="ftab active" onclick="switchForo(this,'avisos')">📢 Avisos</button>
+          <button class="ftab" onclick="switchForo(this,'preguntas')">❓ Preguntas y Respuestas</button>
+          <button class="ftab" onclick="switchForo(this,'reflexion')">🌱 Reflexión Pedagógica</button>
+        </div>
+        <div id="foro-content"></div>
+      </div>
+    </div>
+
+    <!-- ===== PROGRESO ===== -->
+    <div class="page" id="page-progreso">
+      <div class="prog-section">
+        <div class="prog-title">📊 Mi Progreso Detallado</div>
+        <div class="prog-card">
+          <div class="pc-head">
+            <span class="pc-name">Unidad 1 · Conociendo la IA</span>
+            <span class="pc-pct" id="pp-u1" style="color:var(--azul)">0%</span>
+          </div>
+          <div class="pc-bar"><div class="pc-fill" id="ppb-u1" style="width:0%;background:linear-gradient(90deg,var(--azul),#4F6EFF)"></div></div>
+          <div class="pc-details">
+            <div class="pc-det">Video intro: <span id="pd-v1">Pendiente</span></div>
+            <div class="pc-det">Trivia: <span id="pd-q1">Pendiente</span></div>
+            <div class="pc-det">Foro: <span id="pd-f1">Pendiente</span></div>
+            <div class="pc-det">Entrega: <span id="pd-e1">Pendiente</span></div>
+          </div>
+        </div>
+        <div class="prog-card">
+          <div class="pc-head">
+            <span class="pc-name">Unidad 2 · IA en mis clases</span>
+            <span class="pc-pct" id="pp-u2" style="color:var(--verde)">0%</span>
+          </div>
+          <div class="pc-bar"><div class="pc-fill" id="ppb-u2" style="width:0%;background:linear-gradient(90deg,var(--verde),#12C27A)"></div></div>
+          <div class="pc-details">
+            <div class="pc-det">Video intro: <span id="pd-v2">Pendiente</span></div>
+            <div class="pc-det">Trivia: <span id="pd-q2">Pendiente</span></div>
+            <div class="pc-det">Foro: <span id="pd-f2">Pendiente</span></div>
+            <div class="pc-det">Entrega: <span id="pd-e2">Pendiente</span></div>
+          </div>
+        </div>
+        <div class="prog-card">
+          <div class="pc-head">
+            <span class="pc-name">Unidad 3 · Diseño Lúdico con IA</span>
+            <span class="pc-pct" id="pp-u3" style="color:var(--ambar)">0%</span>
+          </div>
+          <div class="pc-bar"><div class="pc-fill" id="ppb-u3" style="width:0%;background:linear-gradient(90deg,var(--ambar),#F28C38)"></div></div>
+          <div class="pc-details">
+            <div class="pc-det">Video intro: <span id="pd-v3">Pendiente</span></div>
+            <div class="pc-det">Trivia: <span id="pd-q3">Pendiente</span></div>
+            <div class="pc-det">Foro: <span id="pd-f3">Pendiente</span></div>
+            <div class="pc-det">Entrega: <span id="pd-e3">Pendiente</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prog-title">🏅 Mis Insignias</div>
+      <div class="badges-grid" id="badges-grid">
+        <div class="badge-item" id="badge-0">
+          <div class="badge-emoji">🚀</div>
+          <div class="badge-name">Primer Paso</div>
+          <div class="badge-desc">Completaste la Unidad 1</div>
+        </div>
+        <div class="badge-item locked" id="badge-1">
+          <div class="badge-emoji">🎨</div>
+          <div class="badge-name">Creador IA</div>
+          <div class="badge-desc">Completaste la Unidad 2</div>
+        </div>
+        <div class="badge-item locked" id="badge-2">
+          <div class="badge-emoji">🎮</div>
+          <div class="badge-name">Maestro Lúdico</div>
+          <div class="badge-desc">Completaste la Unidad 3</div>
+        </div>
+        <div class="badge-item locked" id="badge-3">
+          <div class="badge-emoji">🏆</div>
+          <div class="badge-name">Maestro Digital</div>
+          <div class="badge-desc">Curso 100% completado</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EVALUACIÓN ===== -->
+    <div class="page" id="page-evaluacion">
+      <div class="eval-card">
+        <div class="widget-title" style="margin-bottom:0.5rem">
+          <div class="wt-icon" style="background:var(--azul-l);color:var(--azul)">📋</div>
+          Rúbrica de Autoevaluación
+        </div>
+        <p style="font-size:13px;color:var(--ink3);margin-bottom:1.25rem;">Valora tu desempeño en cada criterio (1 a 5 estrellas)</p>
+        <div id="rubrica-items"></div>
+        <div style="margin-top:1.25rem;padding:1rem;background:var(--azul-l);border-radius:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:14px;font-weight:600;color:var(--ink)">Puntaje autoevaluado</span>
+          <span style="font-family:'Fraunces',serif;font-size:24px;font-weight:900;color:var(--azul)" id="eval-total">0 / 30</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MATERIALES ===== -->
+    <div class="page" id="page-materiales">
+      <div class="widget" style="margin-bottom:1.25rem;">
+        <div class="widget-title">
+          <div class="wt-icon" style="background:var(--morado-l);color:var(--morado)">📁</div>
+          Recursos del Curso
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="actividad-card" style="margin-bottom:0">
+            <div style="font-size:24px;margin-bottom:6px">📄</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px">Guía de Bienvenida</div>
+            <div style="font-size:12px;color:var(--ink3)">Normas, netiqueta y primeros pasos</div>
+          </div>
+          <div class="actividad-card" style="margin-bottom:0">
+            <div style="font-size:24px;margin-bottom:6px">🎥</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px">Tutorial de Navegación</div>
+            <div style="font-size:12px;color:var(--ink3)">Video 8 min — Cómo usar la plataforma</div>
+          </div>
+          <div class="actividad-card" style="margin-bottom:0">
+            <div style="font-size:24px;margin-bottom:6px">📊</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px">Syllabus Completo</div>
+            <div style="font-size:12px;color:var(--ink3)">PDF — Estructura y evaluación del curso</div>
+          </div>
+          <div class="actividad-card" style="margin-bottom:0">
+            <div style="font-size:24px;margin-bottom:6px">🔗</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px">Herramientas IA</div>
+            <div style="font-size:12px;color:var(--ink3)">Lista de recursos con acceso directo</div>
+          </div>
+          <div class="actividad-card" style="margin-bottom:0">
+            <div style="font-size:24px;margin-bottom:6px">📖</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px">Referencias APA</div>
+            <div style="font-size:12px;color:var(--ink3)">Bibliografía completa del curso</div>
+          </div>
+          <div class="actividad-card" style="margin-bottom:0">
+            <div style="font-size:24px;margin-bottom:6px">🗓</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px">Calendario Académico</div>
+            <div style="font-size:12px;color:var(--ink3)">Fechas de entrega y videoconferencias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">🎉 ¡Muy bien!</div>
+
+<script>
+// ===== ESTADO =====
+const state = {
+  nombre:'',rol:'Docente Participante',
+  progreso:{u1:0,u2:0,u3:0},
+  completadas:0,puntos:0,mensajes:0,
+  semanaActual:1,
+  acts:{v1:false,q1:false,f1:false,e1:false,v2:false,q2:false,f2:false,e2:false,v3:false,q3:false,f3:false,e3:false},
+  evalPuntos:[0,0,0,0,0,0],
+  foroMensajes:{
+    avisos:[
+      {autor:'Tutora Juliana',texto:'¡Bienvenidos/as al curso! Esta semana comenzamos con la Unidad 1. Recuerden revisar el video introductorio antes del reto.',tiempo:'Hace 2 horas',propio:false,color:'#2952E3'},
+      {autor:'Tutora Juliana',texto:'El primer videoconferencia será el próximo miércoles a las 6pm. ¡Opcional pero muy recomendada!',tiempo:'Ayer',propio:false,color:'#2952E3'},
+    ],
+    preguntas:[
+      {autor:'Diana T.',texto:'¿ChatGPT funciona bien desde el celular con datos móviles?',tiempo:'Hace 3 horas',propio:false,color:'#0B9065'},
+      {autor:'Tutora Juliana',texto:'Sí Diana, funciona perfectamente. En la guía de recursos encontrarás un tip para usarlo con menos datos.',tiempo:'Hace 2 horas',propio:false,color:'#2952E3'},
+    ],
+    reflexion:[
+      {autor:'Marcela R.',texto:'Nunca pensé que iba a usar IA en mi clase de Ciencias Naturales, pero después del video intro ya se me ocurren 3 ideas. ¡Esto está bueno!',tiempo:'Hace 1 día',propio:false,color:'#6D28D9'},
+    ]
+  },
+  foroActual:'avisos'
+};
+
+// ===== LOGIN =====
+let selectedRole = 'Docente Participante';
+function selectRole(btn,role){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedRole=role;
+}
+function doLogin(){
+  const nom=document.getElementById('login-nombre').value.trim();
+  const email=document.getElementById('login-email').value.trim();
+  if(!nom){showToast('⚠️ Escribe tu nombre para continuar');return;}
+  state.nombre=nom;state.rol=selectedRole;
+  document.getElementById('login-screen').classList.add('out');
+  setTimeout(()=>{
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('app').classList.add('visible');
+    initApp();
+  },600);
+}
+function doLogout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-screen').classList.remove('out');
+}
+
+// ===== INIT =====
+function initApp(){
+  const nom=state.nombre;
+  document.getElementById('hero-nombre').textContent=nom.split(' ')[0];
+  document.getElementById('sidebar-nombre').textContent=nom;
+  document.getElementById('sidebar-rol').textContent=state.rol;
+  const initials=nom.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('sidebar-avatar').textContent=initials;
+  renderForo('avisos');
+  renderRubrica();
+  setTimeout(animateBars,500);
+}
+
+// ===== NAVEGACIÓN =====
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  event.currentTarget&&event.currentTarget.classList.add('active');
+  const titles={inicio:'Inicio del Curso',unidades:'Unidades del Curso',foro:'Foros de Discusión',progreso:'Mi Progreso',evaluacion:'Evaluación y Rúbrica',materiales:'Recursos y Materiales'};
+  document.getElementById('topbar-title').textContent=titles[id]||'';
+  closeActivity();
+  if(id==='progreso')setTimeout(animateProgBars,300);
+  if(id==='foro'){document.getElementById('foro-badge').style.display='none';}
+}
+
+// ===== UNIDADES =====
+const unidades=[
+  {
+    titulo:'Unidad 1: Conociendo a la IA',
+    desc:'De extraña a aliada: qué es la IA, mitos y verdades, ética del uso pedagógico.',
+    color:'var(--azul)',idx:0,
+    actividades:[
+      {tipo:'video',titulo:'📹 Video Introductorio',desc:'Introducción a la Inteligencia Artificial para docentes — 5 minutos',key:'v1'},
+      {tipo:'lectura',titulo:'📖 Lectura Base',desc:'¿Qué es la IA y cómo puede transformar mi aula?',key:'r1'},
+      {tipo:'quiz',titulo:'🎯 Reto Nivel 1: Trivia IA',desc:'Pon a prueba lo que aprendiste con 3 preguntas gamificadas',key:'q1',
+       preguntas:[
+         {p:'¿Qué significa IA?',ops:['Información Avanzada','Inteligencia Artificial','Internet Ampliado','Instructivo Académico'],c:1},
+         {p:'¿Cuál herramienta IA puede ayudarte a crear textos y respuestas?',ops:['Educaplay','Kahoot','ChatGPT','Google Maps'],c:2},
+         {p:'¿Qué aspecto es CLAVE al usar IA con estudiantes?',ops:['Usarla sin restricciones','Ética y uso crítico','Reemplazar al docente','Solo para tareas'],c:1}
+       ]},
+      {tipo:'foro',titulo:'💬 Foro de Reflexión',desc:'"Lo que creía vs. lo que descubrí sobre la IA"',key:'f1',min:200},
+      {tipo:'entrega',titulo:'📤 Entrega Unidad 1',desc:'Sube tu reflexión escrita o en audio (mínimo 200 palabras)',key:'e1'}
+    ]
+  },
+  {
+    titulo:'Unidad 2: La IA en mis clases',
+    desc:'Herramientas para crear contenido, evaluar y dar retroalimentación con IA.',
+    color:'var(--verde)',idx:1,
+    actividades:[
+      {tipo:'video',titulo:'📹 Video: Herramientas IA para el aula',desc:'Canva IA, Quizlet y Magic School AI explicadas paso a paso',key:'v2'},
+      {tipo:'lectura',titulo:'📖 Lectura: Pedagogía de las multiliteracidades',desc:'Cope y Kalantzis (2021) — Aprender diseñando con tecnología',key:'r2'},
+      {tipo:'quiz',titulo:'🎯 Reto Nivel 2: IA Creadora',desc:'3 preguntas sobre herramientas de creación de contenido con IA',key:'q2',
+       preguntas:[
+         {p:'¿Canva IA puede hacer qué tipo de tarea?',ops:['Calificar exámenes','Crear presentaciones con diseño automático','Reemplazar al docente','Conectar a internet'],c:1},
+         {p:'¿Para qué sirve Quizlet con IA?',ops:['Editar videos','Crear flashcards y cuestionarios automáticos','Diseñar páginas web','Gestionar correo'],c:1},
+         {p:'¿Qué es la evaluación adaptativa?',ops:['Una evaluación escrita','Una que se ajusta al nivel del estudiante','Una evaluación grupal','Una evaluación oral'],c:1}
+       ]},
+      {tipo:'foro',titulo:'💬 Galería Colaborativa',desc:'Comparte el material que creaste con IA y comenta el de un compañero',key:'f2',min:150},
+      {tipo:'entrega',titulo:'📤 Entrega Unidad 2',desc:'Sube tu material educativo creado con IA (presentación, quiz o infografía)',key:'e2'}
+    ]
+  },
+  {
+    titulo:'Unidad 3: Diseño Lúdico con IA',
+    desc:'Crea juegos educativos con IA y presenta tu producto final gamificado.',
+    color:'var(--ambar)',idx:2,
+    actividades:[
+      {tipo:'video',titulo:'📹 Video: Gamificación con IA',desc:'Educaplay, Genially y Kahoot + IA para diseñar experiencias lúdicas',key:'v3'},
+      {tipo:'lectura',titulo:'📖 Lectura: The Gamification of Learning',desc:'Kapp (2012) — Elementos del juego aplicados al aprendizaje',key:'r3'},
+      {tipo:'quiz',titulo:'🎯 Reto Nivel 3: Maestro Lúdico',desc:'El reto final — 3 preguntas sobre diseño de experiencias gamificadas',key:'q3',
+       preguntas:[
+         {p:'¿Qué elementos definen la gamificación educativa?',ops:['Solo videojuegos','Puntos, insignias, niveles y retroalimentación inmediata','Películas educativas','Clases magistrales'],c:1},
+         {p:'¿Educaplay sirve para...?',ops:['Crear videos','Editar fotos','Diseñar juegos y actividades interactivas','Gestionar redes sociales'],c:2},
+         {p:'¿Por qué el juego reduce el miedo a equivocarse?',ops:['Porque es fácil','Porque el error es parte del proceso y se puede reintentar','Porque no hay calificación','Porque es divertido nada más'],c:1}
+       ]},
+      {tipo:'foro',titulo:'💬 Presentación del Producto Final',desc:'Comparte tu actividad gamificada con IA y describe cómo la usarías',key:'f3',min:200},
+      {tipo:'entrega',titulo:'📤 Producto Final',desc:'Video 3–5 min explicando tu actividad gamificada + autoevaluación',key:'e3'}
+    ]
+  }
+];
+
+let currentUnidad=null;
+function openUnidad(idx){
+  currentUnidad=idx;
+  const u=unidades[idx];
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-unidades').classList.add('active');
+  document.getElementById('unidades-grid')||null;
+  document.querySelectorAll('.unidades-grid')[0].style.display='none';
+  const av=document.getElementById('activity-view');
+  av.style.display='block';
+  document.getElementById('topbar-title').textContent=u.titulo;
+  document.getElementById('av-header').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div style="padding:4px 12px;border-radius:100px;background:${u.color}22;font-size:12px;font-weight:700;color:${u.color}">
+        Unidad ${idx+1} · ${idx===0?'Sem. 1–2':idx===1?'Sem. 3–4':'Sem. 5–6'}
+      </div>
+    </div>
+    <h2>${u.titulo}</h2>
+    <p>${u.desc}</p>
+  `;
+  renderActividades(idx);
+}
+
+function closeActivity(){
+  document.querySelectorAll('.unidades-grid').forEach(g=>g.style.display='');
+  document.getElementById('activity-view').style.display='none';
+  currentUnidad=null;
+  document.getElementById('topbar-title').textContent='Unidades del Curso';
+}
+
+function renderActividades(idx){
+  const u=unidades[idx];
+  const cont=document.getElementById('av-content');
+  cont.innerHTML='';
+  cont.style.display='flex';cont.style.flexDirection='column';cont.style.gap='1rem';
+  u.actividades.forEach(act=>{
+    const div=document.createElement('div');
+    if(act.tipo==='video') div.innerHTML=renderVideo(act,idx);
+    else if(act.tipo==='lectura') div.innerHTML=renderLectura(act,idx);
+    else if(act.tipo==='quiz') div.innerHTML=renderQuiz(act,idx);
+    else if(act.tipo==='foro') div.innerHTML=renderForoAct(act,idx);
+    else if(act.tipo==='entrega') div.innerHTML=renderEntrega(act,idx);
+    cont.appendChild(div);
+  });
+}
+
+function renderVideo(act,idx){
+  const done=state.acts[act.key];
+  return `<div class="av-grid" style="grid-template-columns:1fr 1fr;">
+    <div>
+      <div class="video-box" onclick="marcarVideo('${act.key}',${idx})">
+        <div class="play-btn">▶</div>
+        <div class="video-label">${act.titulo}</div>
+      </div>
+    </div>
+    <div class="lectura-box">
+      <h4>${act.titulo}</h4>
+      <p>${act.desc}</p>
+      <div style="margin-top:12px;padding:8px 12px;border-radius:8px;background:${done?'var(--verde-l)':'var(--bg2)'};font-size:12px;font-weight:700;color:${done?'var(--verde)':'var(--ink3)'}">
+        ${done?'✅ Visto — +25 puntos':'⏳ Pendiente de ver'}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderLectura(act,idx){
+  const lecturas={
+    r1:`La Inteligencia Artificial (IA) es la capacidad de las máquinas para realizar tareas que normalmente requieren inteligencia humana: razonar, aprender, tomar decisiones. En educación, la IA abre posibilidades para personalizar el aprendizaje, crear materiales en segundos y dar retroalimentación inmediata. El reto no está en la herramienta, sino en el criterio pedagógico del docente que la usa. <strong>Reflexiona:</strong> ¿Qué mito sobre la IA tenías antes de este curso?`,
+    r2:`Cope y Kalantzis (2021) proponen que el aprendizaje del siglo XXI debe integrar múltiples modos de comunicación: texto, imagen, video, audio, diseño. La IA permite que los docentes creen materiales multimedia de calidad sin ser expertos en tecnología. <strong>Ejemplo:</strong> Con Canva IA puedes generar una infografía completa escribiendo solo una descripción de tu tema en segundos.`,
+    r3:`Kapp (2012) define la gamificación educativa como el uso de mecánicas y dinámicas de juego — puntos, insignias, niveles, narrativa, retroalimentación inmediata — en contextos no lúdicos para motivar y comprometer a los aprendices. La clave no está en hacer que todo sea un juego, sino en usar los elementos del juego que activan la motivación intrínseca.`
+  };
+  return `<div class="lectura-box">
+    <h4>${act.titulo}</h4>
+    <p style="line-height:1.7;">${lecturas[act.key]||act.desc}</p>
+  </div>`;
+}
+
+function renderQuiz(act,idx){
+  const done=state.acts[act.key];
+  let html=`<div class="quiz-box">
+    <h3>${act.titulo}</h3>
+    <p>${act.desc}</p>
+    ${done?`<div style="padding:1rem;border-radius:10px;background:var(--verde-l);color:var(--verde);font-weight:700;font-size:14px;text-align:center;">✅ ¡Reto completado! +50 puntos ganados</div>`:''}
+    ${!done?act.preguntas.map((q,qi)=>`
+      <div class="quiz-pregunta">
+        <p>${qi+1}. ${q.p}</p>
+        <div class="quiz-opciones">
+          ${q.ops.map((op,oi)=>`<button class="quiz-op" id="op-${act.key}-${qi}-${oi}" onclick="selectOp('${act.key}',${qi},${oi},${q.c})">${op}</button>`).join('')}
+        </div>
+      </div>
+    `).join(''):''}
+    ${!done?`<div class="quiz-result" id="qres-${act.key}"></div>
+    <button class="quiz-submit" id="qbtn-${act.key}" onclick="submitQuiz('${act.key}',${idx})" disabled>Verificar Respuestas</button>`:''}
+  </div>`;
+  return html;
+}
+
+let selectedOps={};
+function selectOp(key,qi,oi,correct){
+  if(!selectedOps[key])selectedOps[key]={};
+  selectedOps[key][qi]=oi;
+  const u=unidades.find(u=>u.actividades.some(a=>a.key===key));
+  const act=u.actividades.find(a=>a.key===key);
+  const nQ=act.preguntas.length;
+  document.querySelectorAll(`[id^="op-${key}-${qi}"]`).forEach(b=>b.classList.remove('correct','wrong'));
+  document.getElementById(`op-${key}-${qi}-${oi}`).style.background='var(--azul-l)';
+  document.getElementById(`op-${key}-${qi}-${oi}`).style.borderColor='var(--azul)';
+  const allAnswered=Object.keys(selectedOps[key]).length===nQ;
+  const btn=document.getElementById(`qbtn-${key}`);
+  if(btn)btn.disabled=!allAnswered;
+}
+
+function submitQuiz(key,idx){
+  const u=unidades[idx];
+  const act=u.actividades.find(a=>a.key===key);
+  let correct=0;
+  act.preguntas.forEach((q,qi)=>{
+    const selected=selectedOps[key]&&selectedOps[key][qi];
+    if(selected===undefined)return;
+    const opEl=document.getElementById(`op-${key}-${qi}-${selected}`);
+    if(selected===q.c){correct++;if(opEl)opEl.classList.add('correct');}
+    else{if(opEl)opEl.classList.add('wrong');const corrEl=document.getElementById(`op-${key}-${qi}-${q.c}`);if(corrEl)corrEl.classList.add('correct');}
+  });
+  const res=document.getElementById(`qres-${key}`);
+  if(res){
+    res.classList.add('show');
+    res.style.background=correct===act.preguntas.length?'var(--verde-l)':correct>0?'var(--ambar-l)':'var(--coral-l)';
+    res.style.color=correct===act.preguntas.length?'var(--verde)':correct>0?'var(--ambar)':'var(--coral)';
+    res.textContent=`${correct===act.preguntas.length?'🏆 ¡Perfecto!':correct>0?'👍 Bien hecho!':'💪 ¡Inténtalo de nuevo!'} — ${correct}/${act.preguntas.length} correctas`;
+  }
+  const btn=document.getElementById(`qbtn-${key}`);
+  if(btn)btn.disabled=true;
+  if(correct>0){
+    state.acts[key]=true;
+    addPoints(50,idx);
+    addActividad(`✅ Completaste el reto: ${act.titulo}`);
+    showToast(`🏆 ¡${correct}/${act.preguntas.length} correctas! +50 puntos`);
+    updateProgreso();
+  }
+}
+
+function marcarVideo(key,idx){
+  if(state.acts[key])return;
+  state.acts[key]=true;
+  addPoints(25,idx);
+  addActividad('📹 Video completado — Unidad '+(idx+1));
+  showToast('✅ Video visto — +25 puntos');
+  updateProgreso();
+  openUnidad(idx);
+}
+
+function renderForoAct(act,idx){
+  const done=state.acts[act.key];
+  const msgs=state.foroMensajes.reflexion;
+  return `<div class="foro-box">
+    <h3>${act.titulo}</h3>
+    <p>${act.desc} (mínimo ${act.min} palabras)</p>
+    <div id="foro-act-msgs-${act.key}">
+      ${msgs.slice(0,2).map(m=>`
+        <div class="foro-mensaje">
+          <div class="foro-avatar" style="background:${m.color}22;color:${m.color}">${m.autor.slice(0,2).toUpperCase()}</div>
+          <div class="foro-burbuja">
+            <div class="foro-autor">${m.autor}</div>
+            <div class="foro-texto">${m.texto}</div>
+            <div class="foro-tiempo">${m.tiempo}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    ${!done?`<div class="foro-input-area">
+      <textarea class="foro-textarea" id="foro-input-${act.key}" placeholder="Escribe tu reflexión aquí (mínimo ${act.min} palabras)..." oninput="countWords('${act.key}',${act.min})"></textarea>
+      <div class="foro-chars" id="foro-wc-${act.key}">0 palabras de ${act.min} mínimas</div>
+      <div class="foro-req" id="foro-req-${act.key}">⚠️ Escribe al menos ${act.min} palabras para publicar</div>
+      <button class="foro-enviar" onclick="enviarForo('${act.key}',${idx},${act.min})">Publicar en el Foro →</button>
+    </div>`:
+    `<div style="padding:0.75rem 1rem;background:var(--verde-l);border-radius:10px;font-size:13px;font-weight:700;color:var(--verde);margin-top:0.75rem;">✅ Participación publicada — +40 puntos</div>`}
+  </div>`;
+}
+
+function countWords(key,min){
+  const val=document.getElementById(`foro-input-${key}`).value;
+  const words=val.trim().split(/\s+/).filter(w=>w.length>0).length;
+  document.getElementById(`foro-wc-${key}`).textContent=`${words} palabras de ${min} mínimas`;
+  document.getElementById(`foro-wc-${key}`).style.color=words>=min?'var(--verde)':'var(--ink3)';
+}
+
+function enviarForo(key,idx,min){
+  const val=document.getElementById(`foro-input-${key}`).value;
+  const words=val.trim().split(/\s+/).filter(w=>w.length>0).length;
+  if(words<min){document.getElementById(`foro-req-${key}`).style.display='block';return;}
+  state.acts[key]=true;
+  state.mensajes++;
+  const act=unidades[idx].actividades.find(a=>a.key===key);
+  addPoints(40,idx);
+  addActividad(`💬 Participaste en: ${act.titulo}`);
+  showToast('🌱 ¡Participación publicada! +40 puntos');
+  updateProgreso();
+  openUnidad(idx);
+  document.getElementById('stat-mensajes').textContent=state.mensajes;
+}
+
+function renderEntrega(act,idx){
+  const done=state.acts[act.key];
+  return `<div class="entrega-box ${done?'done':''}" onclick="${!done?`marcarEntrega('${act.key}',${idx})`:''}" style="${done?'cursor:default':''}">
+    <div class="entrega-icon">${done?'✅':'📤'}</div>
+    <h4>${done?'¡Entrega recibida!':act.titulo}</h4>
+    <p>${done?'Tu entrega fue registrada exitosamente — +60 puntos':act.desc}</p>
+    ${!done?`<div style="margin-top:12px;padding:8px 16px;border-radius:8px;background:var(--azul);color:#fff;font-size:13px;font-weight:700;display:inline-block;">Simular Entrega →</div>`:''}
+  </div>`;
+}
+
+function marcarEntrega(key,idx){
+  state.acts[key]=true;
+  const act=unidades[idx].actividades.find(a=>a.key===key);
+  addPoints(60,idx);
+  addActividad(`📤 Entrega completada — ${act.titulo}`);
+  showToast('🎉 ¡Entrega registrada! +60 puntos');
+  updateProgreso();
+  openUnidad(idx);
+}
+
+// ===== PROGRESO =====
+function addPoints(pts,idx){
+  state.puntos+=pts;
+  state.completadas++;
+  document.getElementById('stat-puntos').textContent=state.puntos;
+  document.getElementById('stat-completadas').textContent=state.completadas;
+  const level=state.puntos>=300?'🏆 Maestro Digital':state.puntos>=150?'🎨 Innovador':state.puntos>=50?'⚡ Explorador':'🌱 Iniciando';
+  document.getElementById('sidebar-level').textContent=level;
+  updateBadges();
+}
+
+function updateProgreso(){
+  const u=unidades;
+  u.forEach((un,i)=>{
+    const keys=un.actividades.map(a=>a.key).filter(k=>k&&!k.startsWith('r'));
+    const done=keys.filter(k=>state.acts[k]).length;
+    const pct=Math.round((done/keys.length)*100);
+    state.progreso['u'+(i+1)]=pct;
+    const barId='bar-u'+(i+1),pctId='pct-u'+(i+1);
+    const bar=document.getElementById(barId),pctEl=document.getElementById(pctId);
+    if(bar){bar.style.width=pct+'%';}
+    if(pctEl){pctEl.textContent=pct+'%';}
+    const ucFill=document.getElementById('uc-fill-'+i),ucPct=document.getElementById('uc-pct-'+i);
+    if(ucFill)ucFill.style.width=pct+'%';
+    if(ucPct)ucPct.textContent=pct+'%';
+  });
+  const total=Math.round((state.progreso.u1+state.progreso.u2+state.progreso.u3)/3);
+  document.getElementById('sidebar-prog').style.width=total+'%';
+  document.getElementById('sidebar-prog-txt').textContent=total+'% completado';
+  document.getElementById('topbar-week').textContent=`📅 Semana ${Math.min(Math.ceil(total/17)+1,6)} de 6`;
+  updateDetailedProg();
+}
+
+function updateDetailedProg(){
+  const checks={v1:'video',q1:'trivia',f1:'foro',e1:'entrega',v2:'video',q2:'trivia',f2:'foro',e2:'entrega',v3:'video',q3:'trivia',f3:'foro',e3:'entrega'};
+  Object.entries(checks).forEach(([k,label])=>{
+    const el=document.getElementById('pd-'+k);
+    if(el)el.textContent=state.acts[k]?'✅ Completado':'Pendiente';
+    if(el)el.style.color=state.acts[k]?'var(--verde)':'var(--ink3)';
+  });
+  [1,2,3].forEach(i=>{
+    const p=state.progreso['u'+i];
+    document.getElementById('pp-u'+i).textContent=p+'%';
+    document.getElementById('ppb-u'+i).style.width=p+'%';
+  });
+}
+
+function animateBars(){
+  document.querySelectorAll('.ur-fill,.uc-prog-fill,.pc-fill').forEach(b=>{
+    const w=b.style.width;b.style.width='0';
+    setTimeout(()=>{b.style.width=w;},100);
+  });
+}
+function animateProgBars(){
+  document.querySelectorAll('.pc-fill').forEach(b=>{
+    const w=b.style.width;b.style.width='0';
+    setTimeout(()=>{b.style.width=w;},100);
+  });
+}
+
+function updateBadges(){
+  if(state.progreso.u1>0)document.getElementById('badge-0').classList.remove('locked');
+  if(state.progreso.u2>0)document.getElementById('badge-1').classList.remove('locked');
+  if(state.progreso.u3>0)document.getElementById('badge-2').classList.remove('locked');
+  if(state.progreso.u1+state.progreso.u2+state.progreso.u3>=300)document.getElementById('badge-3').classList.remove('locked');
+}
+
+// ===== FORO GENERAL =====
+function renderForo(tipo){
+  state.foroActual=tipo;
+  const msgs=state.foroMensajes[tipo]||[];
+  const cont=document.getElementById('foro-content');
+  cont.innerHTML=`
+    <div id="foro-msgs" style="margin-bottom:1rem;max-height:400px;overflow-y:auto;">
+      ${msgs.map((m,i)=>`
+        <div class="foro-mensaje">
+          <div class="foro-avatar" style="background:${m.color}22;color:${m.color}">${m.autor.slice(0,2).toUpperCase()}</div>
+          <div class="foro-burbuja ${m.propio?'propio':''}">
+            <div class="foro-autor">${m.autor}</div>
+            <div class="foro-texto">${m.texto}</div>
+            <div class="foro-tiempo">${m.tiempo}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="foro-input-area">
+      <textarea class="foro-textarea" id="foro-main-input" placeholder="Escribe tu mensaje..." oninput="countMainWords()"></textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+        <span class="foro-chars" id="foro-main-wc">0 palabras</span>
+        <button class="foro-enviar" onclick="enviarForoMain()">Publicar →</button>
+      </div>
+    </div>
+  `;
+}
+
+function switchForo(btn,tipo){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderForo(tipo);
+}
+
+function countMainWords(){
+  const val=document.getElementById('foro-main-input').value;
+  const words=val.trim().split(/\s+/).filter(w=>w.length>0).length;
+  document.getElementById('foro-main-wc').textContent=words+' palabras';
+}
+
+function enviarForoMain(){
+  const val=document.getElementById('foro-main-input').value.trim();
+  if(!val){showToast('⚠️ Escribe algo antes de publicar');return;}
+  const tipo=state.foroActual;
+  if(!state.foroMensajes[tipo])state.foroMensajes[tipo]=[];
+  state.foroMensajes[tipo].push({
+    autor:state.nombre,texto:val,tiempo:'Ahora mismo',propio:true,color:'var(--azul)'
+  });
+  state.mensajes++;
+  document.getElementById('stat-mensajes').textContent=state.mensajes;
+  renderForo(tipo);
+  showToast('✅ Mensaje publicado en el foro');
+  setTimeout(()=>{const d=document.getElementById('foro-msgs');d.scrollTop=d.scrollHeight;},100);
+}
+
+// ===== RÚBRICA =====
+const criterios=[
+  'Propósito y Justificación',
+  'Modelo ADDIE aplicado',
+  'Escenarios de Comunicación',
+  'Contenidos y Actividades',
+  'Rúbrica de Evaluación',
+  'Normas APA y Redacción'
+];
+
+function renderRubrica(){
+  const cont=document.getElementById('rubrica-items');
+  cont.innerHTML=criterios.map((c,i)=>`
+    <div class="ev-criterio">
+      <span class="ev-nombre">${c}</span>
+      <div class="ev-stars">
+        ${[1,2,3,4,5].map(s=>`<span class="ev-star ${state.evalPuntos[i]>=s?'on':''}" onclick="setEval(${i},${s})">★</span>`).join('')}
+      </div>
+      <span class="ev-pts" id="ep-${i}">${state.evalPuntos[i]} pts</span>
+    </div>
+  `).join('');
+}
+
+function setEval(idx,val){
+  state.evalPuntos[idx]=val;
+  const total=state.evalPuntos.reduce((a,b)=>a+b,0);
+  document.getElementById('eval-total').textContent=`${total} / 30`;
+  renderRubrica();
+}
+
+// ===== ACTIVIDAD RECIENTE =====
+function addActividad(txt){
+  const feed=document.getElementById('actividad-feed');
+  const div=document.createElement('div');
+  div.className='act-item';
+  div.innerHTML=`<div class="act-dot" style="background:var(--azul)"></div><div><div class="act-text">${txt}</div><div class="act-time">Ahora mismo</div></div>`;
+  div.style.animation='slideIn 0.3s ease both';
+  feed.prepend(div);
+}
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ===== INICIAR BARRAS =====
+window.addEventListener('load',()=>setTimeout(animateBars,800));
+</script>
+</body>
+</html>
